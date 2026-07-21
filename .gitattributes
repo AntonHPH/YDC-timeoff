@@ -1,0 +1,21 @@
+* text=auto eol=lf
+
+# Windows command scripts should keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Solution and project files are text
+*.sln text
+*.csproj text
+*.props text
+*.targets text
+
+# Common binaries
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+
