@@ -81,3 +81,8 @@ public interface IReportingHierarchyService
     Task<HierarchyValidationResult> ValidateAsync(CancellationToken ct = default);
 }
 
+public interface ISmartSearchService
+{
+    Task<SmartSearchResponseDto> SearchAsync(string query, int limit = 10, CancellationToken ct = default);
+}
+

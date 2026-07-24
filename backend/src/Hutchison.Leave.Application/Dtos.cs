@@ -82,3 +82,17 @@ public sealed record HierarchyValidationResult(
     bool HasBottlenecks,
     IReadOnlyList<string> Messages);
 
+public sealed record SmartSearchResultItemDto(
+    string EntityType,
+    Guid EntityId,
+    string PrimaryText,
+    string SecondaryText,
+    string Route,
+    string? Badge,
+    DateTime? SortDateUtc);
+
+public sealed record SmartSearchResponseDto(
+    string Query,
+    int Total,
+    IReadOnlyList<SmartSearchResultItemDto> Items);
+

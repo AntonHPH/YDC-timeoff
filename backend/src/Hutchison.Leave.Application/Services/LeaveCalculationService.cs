@@ -39,7 +39,7 @@ public sealed class LeaveCalculationService : ILeaveCalculationService
             var isWeekend = date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
             var isHoliday = holidaySet.Contains(date);
 
-            if (isWeekend || (leaveType.ExcludeHoliday && isHoliday))
+            if (isWeekend || isHoliday)
             {
                 excludedDates.Add(date);
                 continue;

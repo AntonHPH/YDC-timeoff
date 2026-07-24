@@ -13,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IExportService, ExportService>();
         services.AddScoped<IReportingHierarchyService, ReportingHierarchyService>();
+        services.AddScoped<ISmartSearchService, SmartSearchService>();
 
         return services;
     }
