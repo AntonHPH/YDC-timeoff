@@ -23,7 +23,7 @@ import {
 
 import { StatusChip } from "../components/StatusChip";
 import { StatusLegend } from "../components/StatusLegend";
-import { defaultEmployeeId } from "../constants";
+import { getCurrentEmployeeId } from "../services/auth";
 import {
   calculateLeave,
   createLeaveApplication,
@@ -56,6 +56,7 @@ export function ApplyLeavePage() {
   const [submitError, setSubmitError] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
+  const employeeId = getCurrentEmployeeId();
 
   const loadData = async () => {
     setLoadingError("");
@@ -87,7 +88,7 @@ export function ApplyLeavePage() {
           startDate,
           endDate,
           session,
-          employeeId: defaultEmployeeId,
+          employeeId,
           leaveTypeId,
         };
 
@@ -99,7 +100,7 @@ export function ApplyLeavePage() {
     };
 
     void refreshCalculation();
-  }, [leaveTypeId, startDate, endDate, session]);
+  }, [employeeId, leaveTypeId, startDate, endDate, session]);
 
   const calendarEvents = useMemo(
     () =>
@@ -139,7 +140,7 @@ export function ApplyLeavePage() {
 
     try {
       await createLeaveApplication({
-        applicantId: defaultEmployeeId,
+        applicantId: employeeId,
         leaveTypeId,
         startDate,
         endDate,

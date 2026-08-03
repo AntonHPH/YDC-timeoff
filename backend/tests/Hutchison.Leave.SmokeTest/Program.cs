@@ -11,12 +11,15 @@ await using var provider = services.BuildServiceProvider();
 
 var calculator = provider.GetRequiredService<ILeaveCalculationService>();
 var appService = provider.GetRequiredService<ILeaveApplicationService>();
+var adminStore = provider.GetRequiredService<IDataStoreAdminRepository>();
+
+await adminStore.ResetToSeedAsync();
 
 var calculation = await calculator.CalculateAsync(new LeaveCalculationRequest(
     StartDate: DateTime.UtcNow.Date.AddDays(7),
     EndDate: DateTime.UtcNow.Date.AddDays(11),
     Session: LeaveSession.FullDay,
-    EmployeeId: SeedIds.EmployeeAlice,
+    EmployeeId: SeedIds.Bot0,
     LeaveTypeId: SeedIds.LeaveTypeAnnual));
 
 Console.WriteLine($"Working Days: {calculation.WorkingDays:0.##}");
@@ -28,7 +31,7 @@ if (calculation.WorkingDays <= 0)
 }
 
 var created = await appService.CreateAsync(new LeaveApplicationCreateRequest(
-    ApplicantId: SeedIds.EmployeeAlice,
+    ApplicantId: SeedIds.Bot0,
     LeaveTypeId: SeedIds.LeaveTypeAnnual,
     StartDate: DateTime.UtcNow.Date.AddDays(15),
     EndDate: DateTime.UtcNow.Date.AddDays(16),

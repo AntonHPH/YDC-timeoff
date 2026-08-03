@@ -6,6 +6,7 @@ frontend/.vite/
 
 # Dependencies
 **/node_modules/
+.dotnet/
 
 # Test and coverage output
 **/TestResults/

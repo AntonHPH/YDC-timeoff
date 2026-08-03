@@ -13,8 +13,12 @@ public static class DependencyInjection
         services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
         services.AddScoped<ILeaveBalanceRepository, LeaveBalanceRepository>();
         services.AddScoped<ILeaveApplicationRepository, LeaveApplicationRepository>();
+        services.AddScoped<ILeaveApplicationAuditRepository, LeaveApplicationAuditRepository>();
         services.AddScoped<IHolidayRepository, HolidayRepository>();
         services.AddScoped<IReportingRepository, ReportingRepository>();
+        services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+        services.AddScoped<IUserPreferenceRepository, UserPreferenceRepository>();
+        services.AddScoped<IDataStoreAdminRepository, DataStoreAdminRepository>();
 
         return services;
     }

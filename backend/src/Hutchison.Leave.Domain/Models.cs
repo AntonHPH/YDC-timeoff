@@ -22,14 +22,14 @@ public abstract class Entity
 
 public sealed class Employee : Entity
 {
-    public required string EmployeeNo { get; init; }
-    public required string DisplayName { get; init; }
-    public required string Email { get; init; }
-    public required string PositionTitle { get; init; }
-    public required string BusinessUnit { get; init; }
-    public required string Department { get; init; }
-    public required string Team { get; init; }
-    public bool IsActive { get; init; } = true;
+    public required string EmployeeNo { get; set; }
+    public required string DisplayName { get; set; }
+    public required string Email { get; set; }
+    public required string PositionTitle { get; set; }
+    public required string BusinessUnit { get; set; }
+    public required string Department { get; set; }
+    public required string Team { get; set; }
+    public bool IsActive { get; set; } = true;
 }
 
 public sealed class LeaveType : Entity
@@ -64,11 +64,11 @@ public sealed class LeaveApplication : Entity
     public required string ReferenceNo { get; init; }
     public required Guid ApplicantId { get; init; }
     public required Guid LeaveTypeId { get; init; }
-    public required DateTime StartDate { get; init; }
-    public required DateTime EndDate { get; init; }
+    public required DateTime StartDate { get; set; }
+    public required DateTime EndDate { get; set; }
     public required LeaveSession Session { get; init; }
-    public required decimal DurationDays { get; init; }
-    public string? Remarks { get; init; }
+    public required decimal DurationDays { get; set; }
+    public string? Remarks { get; set; }
     public LeaveStatus Status { get; set; } = LeaveStatus.Pending;
     public Guid? ApproverId { get; set; }
     public DateTime CreatedUtc { get; init; } = DateTime.UtcNow;
@@ -78,6 +78,16 @@ public sealed class LeaveApplication : Entity
     {
         return StartDate.Date <= to.Date && EndDate.Date >= from.Date;
     }
+}
+
+public sealed class LeaveApplicationAuditEntry : Entity
+{
+    public required Guid LeaveApplicationId { get; init; }
+    public required string Action { get; init; }
+    public required Guid ActorId { get; init; }
+    public required string ActorName { get; init; }
+    public string? Comment { get; init; }
+    public DateTime TimestampUtc { get; init; } = DateTime.UtcNow;
 }
 
 public sealed class ApprovalRecord : Entity

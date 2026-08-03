@@ -15,7 +15,7 @@ import {
 
 import { StatusChip } from "../components/StatusChip";
 import { SummaryCard } from "../components/SummaryCard";
-import { defaultEmployeeId } from "../constants";
+import { getCurrentEmployeeId } from "../services/auth";
 import { getDashboardSummary, getWorklist } from "../services/api";
 import { DashboardSummary, WorklistItem } from "../types";
 
@@ -24,6 +24,7 @@ export function HomeDashboardPage() {
   const [worklist, setWorklist] = useState<WorklistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const employeeId = getCurrentEmployeeId();
 
   useEffect(() => {
     const load = async () => {
@@ -32,8 +33,8 @@ export function HomeDashboardPage() {
 
       try {
         const [summaryData, worklistData] = await Promise.all([
-          getDashboardSummary(defaultEmployeeId),
-          getWorklist(defaultEmployeeId),
+          getDashboardSummary(employeeId),
+          getWorklist(employeeId),
         ]);
 
         setSummary(summaryData);
@@ -46,7 +47,7 @@ export function HomeDashboardPage() {
     };
 
     void load();
-  }, []);
+  }, [employeeId]);
 
   if (loading) {
     return <LinearProgress />;

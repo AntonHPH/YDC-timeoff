@@ -75,10 +75,16 @@ public sealed class ExportService : IExportService
 
         foreach (var row in rows)
         {
-            sb.AppendLine($"{Escape(row.ReferenceNo)},{Escape(row.Employee)},{Escape(row.Department)},{Escape(row.LeaveType)},{row.StartDate:yyyy-MM-dd},{row.EndDate:yyyy-MM-dd},{row.Status},{row.DurationDays:0.##}");
+            sb.AppendLine($"{Escape(row.ReferenceNo)},{Escape(row.Employee)},{Escape(row.Department)},{Escape(row.LeaveType)},{Escape(ToExcelTextDate(row.StartDate))},{Escape(ToExcelTextDate(row.EndDate))},{row.Status},{row.DurationDays:0.##}");
         }
 
         return sb.ToString();
+    }
+
+    private static string ToExcelTextDate(DateTime date)
+    {
+        // Keep dates readable in spreadsheet tools without triggering #### display issues.
+        return $"=\"{date:yyyy-MM-dd}\"";
     }
 
     private static string BuildBalanceText(IReadOnlyList<LeaveBalanceRowDto> rows)
@@ -117,7 +123,9 @@ public sealed class ExportService : IExportService
 
     private static string Escape(string value)
     {
-        return value.Contains(',') ? $"\"{value}\"" : value;
+        var escaped = value.Replace("\"", "\"\"");
+        var requiresQuotes = escaped.Contains(',') || escaped.Contains('"') || escaped.Contains('\n') || escaped.Contains('\r');
+        return requiresQuotes ? $"\"{escaped}\"" : escaped;
     }
 }
 

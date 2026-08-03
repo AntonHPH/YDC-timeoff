@@ -1,4 +1,5 @@
 using Hutchison.Leave.Application;
+using Hutchison.Leave.Api.Security;
 using Hutchison.Leave.Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,12 @@ public sealed class LeaveTypesController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Update(Guid id, [FromBody] LeaveType leaveType, CancellationToken ct)
     {
+        var roleCheck = this.RequireAnyRole("HR", "SystemAdministrator");
+        if (roleCheck is not null)
+        {
+            return roleCheck;
+        }
+
         if (id != leaveType.Id)
         {
             return BadRequest(new { message = "Id mismatch." });

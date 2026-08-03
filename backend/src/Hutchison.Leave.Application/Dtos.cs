@@ -39,6 +39,13 @@ public sealed record LeaveApplicationCreateRequest(
     LeaveSession Session,
     string? Remarks);
 
+public sealed record LeaveApplicationUpdateRequest(
+    DateTime StartDate,
+    DateTime EndDate,
+    string? Remarks,
+    Guid ActorId,
+    string? Comment);
+
 public sealed record LeaveApplicationDto(
     Guid Id,
     string ReferenceNo,
@@ -54,6 +61,17 @@ public sealed record LeaveApplicationDto(
     string? Remarks);
 
 public sealed record ApprovalActionRequest(Guid ApproverId, string? Comment);
+
+public sealed record LeaveApplicationCancelRequest(Guid ActorId, string? Comment);
+
+public sealed record LeaveApplicationAuditEntryDto(
+    Guid Id,
+    Guid ApplicationId,
+    string Action,
+    Guid ActorId,
+    string ActorName,
+    string? Comment,
+    DateTime Timestamp);
 
 
 public sealed record LeaveBalanceRowDto(
@@ -95,4 +113,11 @@ public sealed record SmartSearchResponseDto(
     string Query,
     int Total,
     IReadOnlyList<SmartSearchResultItemDto> Items);
+
+public sealed record UserPreferenceDto(
+    string Language,
+    string Theme,
+    bool NotificationEnabled,
+    string DefaultCalendarView,
+    bool DashboardPersonalizationEnabled);
 

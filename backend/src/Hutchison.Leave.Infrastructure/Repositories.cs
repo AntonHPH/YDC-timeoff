@@ -17,6 +17,25 @@ internal sealed class EmployeeRepository : IEmployeeRepository
 
     public Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => Task.FromResult(_store.Employees.FirstOrDefault(x => x.Id == id));
+
+    public Task AddAsync(Employee employee, CancellationToken ct = default)
+    {
+        _store.Employees.Add(employee);
+        _store.SaveChanges();
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateAsync(Employee employee, CancellationToken ct = default)
+    {
+        var index = _store.Employees.FindIndex(x => x.Id == employee.Id);
+        if (index >= 0)
+        {
+            _store.Employees[index] = employee;
+            _store.SaveChanges();
+        }
+
+        return Task.CompletedTask;
+    }
 }
 
 internal sealed class LeaveTypeRepository : ILeaveTypeRepository
@@ -40,6 +59,7 @@ internal sealed class LeaveTypeRepository : ILeaveTypeRepository
         if (existing >= 0)
         {
             _store.LeaveTypes[existing] = leaveType;
+            _store.SaveChanges();
         }
 
         return Task.CompletedTask;
@@ -67,6 +87,7 @@ internal sealed class LeaveBalanceRepository : ILeaveBalanceRepository
         if (index >= 0)
         {
             _store.LeaveBalances[index] = balance;
+            _store.SaveChanges();
         }
 
         return Task.CompletedTask;
@@ -91,6 +112,7 @@ internal sealed class LeaveApplicationRepository : ILeaveApplicationRepository
     public Task AddAsync(LeaveApplication application, CancellationToken ct = default)
     {
         _store.LeaveApplications.Add(application);
+        _store.SaveChanges();
         return Task.CompletedTask;
     }
 
@@ -100,8 +122,34 @@ internal sealed class LeaveApplicationRepository : ILeaveApplicationRepository
         if (index >= 0)
         {
             _store.LeaveApplications[index] = application;
+            _store.SaveChanges();
         }
 
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class LeaveApplicationAuditRepository : ILeaveApplicationAuditRepository
+{
+    private readonly InMemoryDataStore _store;
+
+    public LeaveApplicationAuditRepository(InMemoryDataStore store)
+    {
+        _store = store;
+    }
+
+    public Task<IReadOnlyList<LeaveApplicationAuditEntry>> GetByApplicationIdAsync(Guid applicationId, CancellationToken ct = default)
+    {
+        var rows = _store.LeaveApplicationAudits
+            .Where(x => x.LeaveApplicationId == applicationId)
+            .ToList();
+        return Task.FromResult<IReadOnlyList<LeaveApplicationAuditEntry>>(rows);
+    }
+
+    public Task AddAsync(LeaveApplicationAuditEntry entry, CancellationToken ct = default)
+    {
+        _store.LeaveApplicationAudits.Add(entry);
+        _store.SaveChanges();
         return Task.CompletedTask;
     }
 }
@@ -130,5 +178,90 @@ internal sealed class ReportingRepository : IReportingRepository
 
     public Task<IReadOnlyList<ReportingRelation>> GetAllAsync(CancellationToken ct = default)
         => Task.FromResult<IReadOnlyList<ReportingRelation>>(_store.ReportingRelations);
+}
+
+internal sealed class UserRoleRepository : IUserRoleRepository
+{
+    private readonly InMemoryDataStore _store;
+
+    public UserRoleRepository(InMemoryDataStore store)
+    {
+        _store = store;
+    }
+
+    public Task<IReadOnlyDictionary<Guid, string>> GetAllAsync(CancellationToken ct = default)
+    {
+        var copy = _store.UserRoles.ToDictionary(x => x.Key, x => x.Value);
+        return Task.FromResult<IReadOnlyDictionary<Guid, string>>(copy);
+    }
+
+    public Task<string?> GetByEmployeeIdAsync(Guid employeeId, CancellationToken ct = default)
+    {
+        _store.UserRoles.TryGetValue(employeeId, out var role);
+        return Task.FromResult(role);
+    }
+
+    public Task SetRoleAsync(Guid employeeId, string role, CancellationToken ct = default)
+    {
+        _store.UserRoles[employeeId] = role;
+        _store.SaveChanges();
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class UserPreferenceRepository : IUserPreferenceRepository
+{
+    private readonly InMemoryDataStore _store;
+
+    public UserPreferenceRepository(InMemoryDataStore store)
+    {
+        _store = store;
+    }
+
+    public Task<UserPreferenceDto> GetDefaultsAsync(CancellationToken ct = default)
+    {
+        var pref = _store.PreferenceDefaults;
+        var dto = new UserPreferenceDto(
+            pref.Language,
+            pref.Theme,
+            pref.NotificationEnabled,
+            pref.DefaultCalendarView,
+            pref.DashboardPersonalizationEnabled);
+        return Task.FromResult(dto);
+    }
+
+    public Task SaveDefaultsAsync(UserPreferenceDto preference, CancellationToken ct = default)
+    {
+        _store.PreferenceDefaults = new PreferenceSettings(
+            preference.Language,
+            preference.Theme,
+            preference.NotificationEnabled,
+            preference.DefaultCalendarView,
+            preference.DashboardPersonalizationEnabled);
+        _store.SaveChanges();
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class DataStoreAdminRepository : IDataStoreAdminRepository
+{
+    private readonly InMemoryDataStore _store;
+
+    public DataStoreAdminRepository(InMemoryDataStore store)
+    {
+        _store = store;
+    }
+
+    public Task ResetToSeedAsync(CancellationToken ct = default)
+    {
+        _store.ResetToSeed();
+        return Task.CompletedTask;
+    }
+
+    public Task ClearAllAsync(CancellationToken ct = default)
+    {
+        _store.ClearAllData();
+        return Task.CompletedTask;
+    }
 }
 

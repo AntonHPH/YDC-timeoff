@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Alert,
-  Button,
   Card,
   CardContent,
   Grid,
@@ -32,7 +31,6 @@ export function ReportingHierarchyPage() {
   const [tableRows, setTableRows] = useState<HierarchyRow[]>([]);
   const [validationMessages, setValidationMessages] = useState<string[]>([]);
   const [view, setView] = useState<ViewMode>("tree");
-  const [dragMode, setDragMode] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -49,20 +47,6 @@ export function ReportingHierarchyPage() {
 
     void load();
   }, []);
-
-  const moveRow = (index: number, delta: -1 | 1) => {
-    const target = index + delta;
-    if (target < 0 || target >= tableRows.length) {
-      return;
-    }
-
-    setTableRows((prev) => {
-      const copy = [...prev];
-      const [current] = copy.splice(index, 1);
-      copy.splice(target, 0, current);
-      return copy;
-    });
-  };
 
   return (
     <Grid container spacing={2}>
@@ -84,22 +68,8 @@ export function ReportingHierarchyPage() {
             <ToggleButton value="org">Organization Chart</ToggleButton>
             <ToggleButton value="table">Table View</ToggleButton>
           </ToggleButtonGroup>
-
-          <Button
-            variant="outlined"
-            color={dragMode ? "success" : "primary"}
-            onClick={() => setDragMode((x) => !x)}
-          >
-            {dragMode ? "Disable Drag and Drop Mode" : "Enable Drag and Drop Mode"}
-          </Button>
         </Stack>
       </Grid>
-
-      {dragMode && (
-        <Grid item xs={12}>
-          <Alert severity="info">Drag mode is on. Use Up/Down in Table View to reorder reporting rows.</Alert>
-        </Grid>
-      )}
 
       <Grid item xs={12}>
         {validationMessages.map((msg) => (
@@ -121,7 +91,6 @@ export function ReportingHierarchyPage() {
                     <TableCell>Manager</TableCell>
                     <TableCell>Employee</TableCell>
                     <TableCell>Sequence</TableCell>
-                    <TableCell>Order</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -130,16 +99,6 @@ export function ReportingHierarchyPage() {
                       <TableCell>{row.managerName}</TableCell>
                       <TableCell>{row.employeeName}</TableCell>
                       <TableCell>{row.sequence}</TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={0.5}>
-                          <Button size="small" onClick={() => moveRow(index, -1)}>
-                            Up
-                          </Button>
-                          <Button size="small" onClick={() => moveRow(index, 1)}>
-                            Down
-                          </Button>
-                        </Stack>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

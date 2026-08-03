@@ -90,6 +90,32 @@ Expected output includes:
 - Balance check
 - PASS result line
 
+## Persistence, reset, and demo data
+
+- Backend data persists to a JSON file (`data/hp-eleave-store.json`) under the API runtime folder.
+- You can override the file location with environment variable `HP_ELEAVE_DATA_FILE`.
+- `POST /api/admin/clear` clears all persisted data (System Administrator role required).
+- `POST /api/admin/reseed` replaces data with an expanded example dataset (System Administrator role required).
+- Frontend offline fallback is disabled by default; enable only for demo mode by setting `VITE_ALLOW_OFFLINE_FALLBACK=true`.
+
+Role-aware API behavior in this baseline is driven by header `X-App-Role` from frontend login context.
+
+Example reset calls:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://localhost:5182/api/admin/clear" -Headers @{ "X-App-Role" = "SystemAdministrator" }
+Invoke-RestMethod -Method Post -Uri "http://localhost:5182/api/admin/reseed" -Headers @{ "X-App-Role" = "SystemAdministrator" }
+```
+
+## Demo login accounts
+
+- `bot0@hutchisonports.com` / `1234` (SystemAdministrator)
+- `bot1@hutchisonports.com` / `1234` (Manager)
+- `bot4@hutchisonports.com` / `1234` (Manager)
+- `bot8@hutchisonports.com` / `1234` (Supervisor)
+- `bot12@hutchisonports.com` / `1234` (Manager)
+- `bot2@hutchisonports.com`, `bot3@hutchisonports.com`, `bot5@hutchisonports.com`, `bot6@hutchisonports.com`, `bot7@hutchisonports.com`, `bot9@hutchisonports.com`, `bot10@hutchisonports.com`, `bot11@hutchisonports.com` / `1234` (Employee)
+
 ## Next implementation steps
 
 1. Replace in-memory repositories with EF Core SQL Server repositories.

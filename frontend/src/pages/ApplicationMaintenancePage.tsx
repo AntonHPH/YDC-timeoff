@@ -21,7 +21,6 @@ import {
 } from "@mui/material";
 
 import { StatusChip } from "../components/StatusChip";
-import { defaultApproverId } from "../constants";
 import {
   approveLeave,
   cancelLeaveApplication,
@@ -31,6 +30,7 @@ import {
   rejectLeave,
   updateLeaveApplication,
 } from "../services/api";
+import { getCurrentEmployeeId } from "../services/auth";
 import { LeaveApplication, LeaveApplicationAuditEntry } from "../types";
 
 type SortColumn = "referenceNo" | "applicantName" | "leaveTypeName" | "startDate" | "status";
@@ -64,6 +64,7 @@ export function ApplicationMaintenancePage() {
   });
 
   const [sortBy, setSortBy] = useState<SortColumn>("startDate");
+  const actorId = getCurrentEmployeeId();
 
   const load = async () => {
     try {
@@ -107,9 +108,9 @@ export function ApplicationMaintenancePage() {
 
     try {
       if (action === "approve") {
-        await approveLeave(id, defaultApproverId, "Approved in maintenance");
+        await approveLeave(id, actorId, "Approved in maintenance");
       } else {
-        await rejectLeave(id, defaultApproverId, "Rejected in maintenance");
+        await rejectLeave(id, actorId, "Rejected in maintenance");
       }
 
       setMessage(`Application ${action}d.`);
@@ -157,6 +158,8 @@ export function ApplicationMaintenancePage() {
         startDate: editForm.startDate,
         endDate: editForm.endDate,
         remarks: editForm.remarks,
+        actorId,
+        comment: "Edited in maintenance",
       });
 
       setMessage("Application updated.");
@@ -184,7 +187,7 @@ export function ApplicationMaintenancePage() {
     setError("");
 
     try {
-      await cancelLeaveApplication(row.id, defaultApproverId, "Cancelled in maintenance");
+      await cancelLeaveApplication(row.id, actorId, "Cancelled in maintenance");
       setMessage("Application cancelled.");
       await load();
     } catch {
@@ -208,6 +211,8 @@ export function ApplicationMaintenancePage() {
     }
   };
 
+  const asExcelTextDate = (value: string) => `="${value.slice(0, 10)}"`;
+
   const exportCsv = () => {
     const header = ["Reference", "Applicant", "Leave Type", "Start Date", "End Date", "Duration", "Status", "Remarks"];
     const lines = filteredRows.map((x) =>
@@ -215,8 +220,8 @@ export function ApplicationMaintenancePage() {
         x.referenceNo,
         x.applicantName,
         x.leaveTypeName,
-        x.startDate.slice(0, 10),
-        x.endDate.slice(0, 10),
+        asExcelTextDate(x.startDate),
+        asExcelTextDate(x.endDate),
         x.durationDays,
         x.status,
         (x.remarks ?? "").replace(/\r?\n/g, " "),

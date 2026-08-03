@@ -18,10 +18,14 @@ public sealed class ReportingHierarchyService : IReportingHierarchyService
 
         var childrenMap = relations
             .GroupBy(r => r.ManagerId)
-            .ToDictionary(g => g.Key, g => g.Select(x => x.EmployeeId).ToList());
+            .ToDictionary(g => g.Key, g => g.OrderBy(x => x.Sequence).Select(x => x.EmployeeId).ToList());
 
         var hasManager = relations.Select(r => r.EmployeeId).ToHashSet();
-        var roots = employees.Where(e => !hasManager.Contains(e.Id)).ToList();
+        var roots = employees
+            .Where(e => !hasManager.Contains(e.Id))
+            .OrderBy(e => e.Department)
+            .ThenBy(e => e.DisplayName)
+            .ToList();
 
         var employeeMap = employees.ToDictionary(x => x.Id, x => x);
 
@@ -37,10 +41,10 @@ public sealed class ReportingHierarchyService : IReportingHierarchyService
 
         var hasManager = relations.Select(r => r.EmployeeId).ToHashSet();
         var rootCount = employees.Count(e => !hasManager.Contains(e.Id));
-        var hasMissingApprovers = employees.Any(e => !hasManager.Contains(e.Id)) && rootCount > 1;
+        var hasMissingApprovers = rootCount == 0;
         if (hasMissingApprovers)
         {
-            messages.Add("Some employees are disconnected from a single approval root.");
+            messages.Add("No valid reporting root found.");
         }
 
         var adjacency = relations

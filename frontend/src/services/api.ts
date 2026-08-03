@@ -12,10 +12,26 @@ import {
   SmartSearchResultItem,
   WorklistItem,
 } from "../types";
+import { getCurrentUser } from "./auth";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5182",
   timeout: 10000,
+});
+
+const allowOfflineFallback = (import.meta.env.VITE_ALLOW_OFFLINE_FALLBACK ?? "false").toLowerCase() === "true";
+
+api.interceptors.request.use((config) => {
+  const user = getCurrentUser();
+  if (!user) {
+    return config;
+  }
+
+  config.headers = config.headers ?? {};
+  config.headers["X-App-Role"] = user.role;
+  config.headers["X-App-User-Email"] = user.email;
+  config.headers["X-App-Employee-Id"] = user.employeeId;
+  return config;
 });
 
 type SessionType = "FullDay" | "AM" | "PM";
@@ -25,6 +41,8 @@ export interface LeaveApplicationUpdatePayload {
   startDate: string;
   endDate: string;
   remarks?: string;
+  actorId: string;
+  comment?: string;
 }
 
 interface EmployeeSeed {
@@ -92,6 +110,18 @@ export interface UserRow {
   team: string;
   position: string;
   isActive: boolean;
+  role: string;
+}
+
+export interface CreateUserPayload {
+  employeeNo?: string;
+  displayName: string;
+  email: string;
+  department: string;
+  team: string;
+  position: string;
+  businessUnit?: string;
+  role?: string;
 }
 
 export interface AccessControlRow {
@@ -121,43 +151,133 @@ const offlineStore = {
   employees: [
     {
       id: "11111111-1111-1111-1111-111111111111",
-      employeeNo: "E1001",
-      displayName: "Alice Wong",
-      email: "alice.wong@hutchisonports.com",
-      position: "Operations Manager",
+      employeeNo: "IT000",
+      displayName: "Bot0",
+      email: "bot0@hutchisonports.com",
+      position: "Department Head",
       businessUnit: "Hong Kong Terminal",
-      department: "Operations",
-      team: "Yard Ops",
+      department: "IT",
+      team: "IT Leadership",
     },
     {
       id: "22222222-2222-2222-2222-222222222222",
-      employeeNo: "E1002",
-      displayName: "Bob Chan",
-      email: "bob.chan@hutchisonports.com",
-      position: "Supervisor",
+      employeeNo: "IT001",
+      displayName: "Bot1",
+      email: "bot1@hutchisonports.com",
+      position: "Manager",
       businessUnit: "Hong Kong Terminal",
-      department: "Operations",
-      team: "Yard Ops",
+      department: "IT",
+      team: "Team 1",
     },
     {
       id: "33333333-3333-3333-3333-333333333333",
-      employeeNo: "E2001",
-      displayName: "Charlie Lee",
-      email: "charlie.lee@hutchisonports.com",
-      position: "HR Executive",
+      employeeNo: "IT003",
+      displayName: "Bot2",
+      email: "bot2@hutchisonports.com",
+      position: "Data Analyst",
       businessUnit: "Hong Kong Terminal",
-      department: "HR",
-      team: "HR Services",
+      department: "IT",
+      team: "Team 1",
     },
     {
       id: "44444444-4444-4444-4444-444444444444",
-      employeeNo: "E3001",
-      displayName: "Diana Lam",
-      email: "diana.lam@hutchisonports.com",
-      position: "IT Analyst",
+      employeeNo: "IT004",
+      displayName: "Bot3",
+      email: "bot3@hutchisonports.com",
+      position: "Data Analyst",
       businessUnit: "Hong Kong Terminal",
       department: "IT",
-      team: "Applications",
+      team: "Team 1",
+    },
+    {
+      id: "55555555-5555-5555-5555-555555555555",
+      employeeNo: "IT005",
+      displayName: "Bot4",
+      email: "bot4@hutchisonports.com",
+      position: "Manager",
+      businessUnit: "Hong Kong Terminal",
+      department: "IT",
+      team: "Team 2",
+    },
+    {
+      id: "66666666-6666-6666-6666-666666666666",
+      employeeNo: "IT006",
+      displayName: "Bot5",
+      email: "bot5@hutchisonports.com",
+      position: "Data Analyst",
+      businessUnit: "Hong Kong Terminal",
+      department: "IT",
+      team: "Team 2",
+    },
+    {
+      id: "77777777-7777-7777-7777-777777777777",
+      employeeNo: "IT007",
+      displayName: "Bot6",
+      email: "bot6@hutchisonports.com",
+      position: "Data Analyst",
+      businessUnit: "Hong Kong Terminal",
+      department: "IT",
+      team: "Team 2",
+    },
+    {
+      id: "88888888-8888-8888-8888-888888888888",
+      employeeNo: "IT008",
+      displayName: "Bot7",
+      email: "bot7@hutchisonports.com",
+      position: "Data Analyst",
+      businessUnit: "Hong Kong Terminal",
+      department: "IT",
+      team: "Team 2",
+    },
+    {
+      id: "dddddddd-1111-1111-1111-111111111111",
+      employeeNo: "FIN000",
+      displayName: "Bot12",
+      email: "bot12@hutchisonports.com",
+      position: "Senior Manager",
+      businessUnit: "Hong Kong Terminal",
+      department: "Finance",
+      team: "Finance Leadership",
+    },
+    {
+      id: "99999999-9999-9999-9999-999999999999",
+      employeeNo: "FIN001",
+      displayName: "Bot8",
+      email: "bot8@hutchisonports.com",
+      position: "Manager",
+      businessUnit: "Hong Kong Terminal",
+      department: "Finance",
+      team: "Team 3",
+    },
+    {
+      id: "aaaaaaaa-1111-1111-1111-111111111111",
+      employeeNo: "FIN002",
+      displayName: "Bot9",
+      email: "bot9@hutchisonports.com",
+      position: "Data Analyst",
+      businessUnit: "Hong Kong Terminal",
+      department: "Finance",
+      team: "Team 3",
+    },
+    {
+      id: "bbbbbbbb-1111-1111-1111-111111111111",
+      employeeNo: "FIN003",
+      displayName: "Bot10",
+      email: "bot10@hutchisonports.com",
+      position: "Data Analyst",
+      businessUnit: "Hong Kong Terminal",
+      department: "Finance",
+      team: "Team 3",
+    },
+    {
+      id: "cccccccc-1111-1111-1111-111111111111",
+      employeeNo: "FIN004",
+      displayName: "Bot11",
+      email: "bot11@hutchisonports.com",
+      position: "Data Analyst",
+      businessUnit: "Hong Kong Terminal",
+      department: "Finance",
+      team: "Team 3",
     },
   ] as EmployeeSeed[],
 
@@ -225,52 +345,59 @@ const offlineStore = {
   ] as LeaveType[],
 
   balances: [
-    { employeeId: "11111111-1111-1111-1111-111111111111", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 20, usedDays: 4 },
-    { employeeId: "11111111-1111-1111-1111-111111111111", leaveTypeId: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", entitledDays: 6, usedDays: 1 },
-    { employeeId: "11111111-1111-1111-1111-111111111111", leaveTypeId: "cccccccc-cccc-cccc-cccc-cccccccccccc", entitledDays: 14, usedDays: 2 },
-    { employeeId: "22222222-2222-2222-2222-222222222222", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 16, usedDays: 8 },
-    { employeeId: "44444444-4444-4444-4444-444444444444", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 18, usedDays: 6 },
-    { employeeId: "44444444-4444-4444-4444-444444444444", leaveTypeId: "cccccccc-cccc-cccc-cccc-cccccccccccc", entitledDays: 14, usedDays: 1 },
+    { employeeId: "11111111-1111-1111-1111-111111111111", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 24, usedDays: 4 },
+    { employeeId: "22222222-2222-2222-2222-222222222222", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 20, usedDays: 3 },
+    { employeeId: "33333333-3333-3333-3333-333333333333", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 16, usedDays: 2 },
+    { employeeId: "44444444-4444-4444-4444-444444444444", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 16, usedDays: 1 },
+    { employeeId: "55555555-5555-5555-5555-555555555555", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 20, usedDays: 5 },
+    { employeeId: "66666666-6666-6666-6666-666666666666", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 16, usedDays: 2 },
+    { employeeId: "77777777-7777-7777-7777-777777777777", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 16, usedDays: 3 },
+    { employeeId: "88888888-8888-8888-8888-888888888888", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 16, usedDays: 1 },
+    { employeeId: "dddddddd-1111-1111-1111-111111111111", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 22, usedDays: 3 },
+    { employeeId: "99999999-9999-9999-9999-999999999999", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 18, usedDays: 2 },
+    { employeeId: "aaaaaaaa-1111-1111-1111-111111111111", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 15, usedDays: 2 },
+    { employeeId: "bbbbbbbb-1111-1111-1111-111111111111", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 15, usedDays: 1 },
+    { employeeId: "cccccccc-1111-1111-1111-111111111111", leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", entitledDays: 15, usedDays: 2 },
   ] as BalanceSeed[],
 
   leaveApplications: [
     {
       id: "90000000-0000-0000-0000-000000000001",
-      referenceNo: "REF20260710001",
-      applicantId: "22222222-2222-2222-2222-222222222222",
-      applicantName: "Bob Chan",
+      referenceNo: "REF20260803001",
+      applicantId: "33333333-3333-3333-3333-333333333333",
+      applicantName: "Bot2",
       leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       leaveTypeName: "Annual Leave",
       startDate: new Date(Date.now() + 2 * 86400000).toISOString(),
-      endDate: new Date(Date.now() + 3 * 86400000).toISOString(),
-      durationDays: 2,
+      endDate: new Date(Date.now() + 2 * 86400000).toISOString(),
+      durationDays: 1,
       session: "FullDay",
       status: "Pending",
-      remarks: "Family commitment",
+      remarks: "Team event",
     },
     {
       id: "90000000-0000-0000-0000-000000000002",
-      referenceNo: "REF20260710002",
-      applicantId: "11111111-1111-1111-1111-111111111111",
-      applicantName: "Alice Wong",
+      referenceNo: "REF20260803002",
+      applicantId: "66666666-6666-6666-6666-666666666666",
+      applicantName: "Bot5",
       leaveTypeId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       leaveTypeName: "Annual Leave",
-      startDate: new Date(Date.now() + 5 * 86400000).toISOString(),
-      endDate: new Date(Date.now() + 6 * 86400000).toISOString(),
-      durationDays: 2,
+      startDate: new Date(Date.now() + 4 * 86400000).toISOString(),
+      endDate: new Date(Date.now() + 4 * 86400000).toISOString(),
+      durationDays: 1,
       session: "FullDay",
       status: "Approved",
-      remarks: "Short break",
+      remarks: "Family day",
     },
     {
       id: "90000000-0000-0000-0000-000000000003",
-      referenceNo: "REF20260710003",
+      referenceNo: "REF20260803003",
       applicantId: "44444444-4444-4444-4444-444444444444",
-      applicantName: "Diana Lam",
+      applicantName: "Bot3",
       leaveTypeId: "cccccccc-cccc-cccc-cccc-cccccccccccc",
       leaveTypeName: "Sick Leave",
       startDate: new Date(Date.now() - 2 * 86400000).toISOString(),
-      endDate: new Date(Date.now() - 1 * 86400000).toISOString(),
+      endDate: new Date(Date.now() - 86400000).toISOString(),
       durationDays: 2,
       session: "FullDay",
       status: "Approved",
@@ -280,8 +407,16 @@ const offlineStore = {
 
   reportingRelations: [
     { managerId: "11111111-1111-1111-1111-111111111111", employeeId: "22222222-2222-2222-2222-222222222222", sequence: 1 },
-    { managerId: "11111111-1111-1111-1111-111111111111", employeeId: "33333333-3333-3333-3333-333333333333", sequence: 1 },
-    { managerId: "22222222-2222-2222-2222-222222222222", employeeId: "44444444-4444-4444-4444-444444444444", sequence: 1 },
+    { managerId: "11111111-1111-1111-1111-111111111111", employeeId: "55555555-5555-5555-5555-555555555555", sequence: 2 },
+    { managerId: "22222222-2222-2222-2222-222222222222", employeeId: "33333333-3333-3333-3333-333333333333", sequence: 1 },
+    { managerId: "22222222-2222-2222-2222-222222222222", employeeId: "44444444-4444-4444-4444-444444444444", sequence: 2 },
+    { managerId: "55555555-5555-5555-5555-555555555555", employeeId: "66666666-6666-6666-6666-666666666666", sequence: 1 },
+    { managerId: "55555555-5555-5555-5555-555555555555", employeeId: "77777777-7777-7777-7777-777777777777", sequence: 2 },
+    { managerId: "55555555-5555-5555-5555-555555555555", employeeId: "88888888-8888-8888-8888-888888888888", sequence: 3 },
+    { managerId: "dddddddd-1111-1111-1111-111111111111", employeeId: "99999999-9999-9999-9999-999999999999", sequence: 1 },
+    { managerId: "99999999-9999-9999-9999-999999999999", employeeId: "aaaaaaaa-1111-1111-1111-111111111111", sequence: 1 },
+    { managerId: "99999999-9999-9999-9999-999999999999", employeeId: "bbbbbbbb-1111-1111-1111-111111111111", sequence: 2 },
+    { managerId: "99999999-9999-9999-9999-999999999999", employeeId: "cccccccc-1111-1111-1111-111111111111", sequence: 3 },
   ],
 
   preferences: {
@@ -301,7 +436,17 @@ const offlineStore = {
   offlineNotified: false,
 };
 
+const offlineUserState: Record<string, { role: string; isActive: boolean }> = {};
+
 const auditTrailStore: Record<string, LeaveApplicationAuditEntry[]> = {};
+
+function ensureOfflineUserState(userId: string) {
+  if (!offlineUserState[userId]) {
+    offlineUserState[userId] = { role: "Employee", isActive: true };
+  }
+
+  return offlineUserState[userId];
+}
 
 function ensureAuditSeed(applicationId: string) {
   if (auditTrailStore[applicationId]) {
@@ -359,7 +504,11 @@ function notifyOffline() {
 async function withFallback<T>(live: () => Promise<T>, fallback: () => T | Promise<T>): Promise<T> {
   try {
     return await live();
-  } catch {
+  } catch (error) {
+    if (!allowOfflineFallback) {
+      throw error;
+    }
+
     notifyOffline();
     return await fallback();
   }
@@ -477,6 +626,15 @@ function downloadTextFile(content: string, filename: string) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+function escapeCsvCell(value: string | number): string {
+  const text = String(value).replace(/"/g, '""');
+  return /[",\n\r]/.test(text) ? `"${text}"` : text;
+}
+
+function asExcelTextDate(value: string): string {
+  return `="${value.slice(0, 10)}"`;
 }
 
 export async function getDashboardSummary(employeeId: string): Promise<DashboardSummary> {
@@ -669,7 +827,8 @@ export async function updateLeaveApplication(id: string, payload: LeaveApplicati
   return withFallback(
     async () => {
       const { data } = await api.put<LeaveApplication>(`/api/leave-applications/${id}`, payload, { timeout: 1200 });
-      addAuditEntry(id, "Edited", "system-admin", "System Admin", payload.remarks ? `Updated remarks: ${payload.remarks}` : "Edited");
+      const actor = findEmployee(payload.actorId);
+      addAuditEntry(id, "Edited", payload.actorId, actor.displayName, payload.comment ?? payload.remarks ?? "Edited");
       return data;
     },
     () => {
@@ -693,7 +852,8 @@ export async function updateLeaveApplication(id: string, payload: LeaveApplicati
       };
 
       offlineStore.leaveApplications[index] = updated;
-      addAuditEntry(id, "Edited", "system-admin", "System Admin", payload.remarks ? `Updated remarks: ${payload.remarks}` : "Edited");
+      const actor = findEmployee(payload.actorId);
+      addAuditEntry(id, "Edited", payload.actorId, actor.displayName, payload.comment ?? payload.remarks ?? "Edited");
       return updated;
     }
   );
@@ -961,11 +1121,28 @@ export async function exportReport(report: "leave-balance" | "leave-transaction"
         : "ReferenceNo,Employee,Department,LeaveType,StartDate,EndDate,Status,DurationDays";
 
       const body = rows
-        .map((x) =>
-          isBalance
-            ? `${(x as LeaveBalanceRow).businessUnit},${(x as LeaveBalanceRow).department},${(x as LeaveBalanceRow).team},${(x as LeaveBalanceRow).employee},${(x as LeaveBalanceRow).leaveType},${(x as LeaveBalanceRow).balanceDays}`
-            : `${(x as LeaveTransactionRow).referenceNo},${(x as LeaveTransactionRow).employee},${(x as LeaveTransactionRow).department},${(x as LeaveTransactionRow).leaveType},${(x as LeaveTransactionRow).startDate},${(x as LeaveTransactionRow).endDate},${(x as LeaveTransactionRow).status},${(x as LeaveTransactionRow).durationDays}`
-        )
+        .map((x) => {
+          if (isBalance) {
+            const row = x as LeaveBalanceRow;
+            return [row.businessUnit, row.department, row.team, row.employee, row.leaveType, row.balanceDays]
+              .map(escapeCsvCell)
+              .join(",");
+          }
+
+          const row = x as LeaveTransactionRow;
+          return [
+            row.referenceNo,
+            row.employee,
+            row.department,
+            row.leaveType,
+            asExcelTextDate(row.startDate),
+            asExcelTextDate(row.endDate),
+            row.status,
+            row.durationDays,
+          ]
+            .map(escapeCsvCell)
+            .join(",");
+        })
         .join("\n");
 
       const ext = format === "excel" ? "xls" : format;
@@ -1063,16 +1240,160 @@ export async function getUsers(): Promise<UserRow[]> {
       return data;
     },
     () =>
-      offlineStore.employees.map((x) => ({
-        id: x.id,
-        employeeNo: x.employeeNo,
-        displayName: x.displayName,
-        email: x.email,
-        department: x.department,
-        team: x.team,
-        position: x.position,
+      offlineStore.employees.map((x) => {
+        const state = ensureOfflineUserState(x.id);
+        return {
+          id: x.id,
+          employeeNo: x.employeeNo,
+          displayName: x.displayName,
+          email: x.email,
+          department: x.department,
+          team: x.team,
+          position: x.position,
+          isActive: state.isActive,
+          role: state.role,
+        };
+      })
+  );
+}
+
+export async function createUser(payload: CreateUserPayload): Promise<UserRow> {
+  return withFallback(
+    async () => {
+      const { data } = await api.post<UserRow>("/api/system-settings/users", payload);
+      return data;
+    },
+    () => {
+      const createdId = crypto.randomUUID();
+      const employee = {
+        id: createdId,
+        employeeNo: payload.employeeNo ?? `E${Math.floor(10000 + Math.random() * 90000)}`,
+        displayName: payload.displayName,
+        email: payload.email,
+        position: payload.position,
+        businessUnit: payload.businessUnit ?? "Hong Kong Terminal",
+        department: payload.department,
+        team: payload.team,
+      };
+
+      offlineStore.employees.push(employee);
+      offlineUserState[createdId] = {
+        role: payload.role ?? "Employee",
         isActive: true,
-      }))
+      };
+
+      return {
+        id: createdId,
+        employeeNo: employee.employeeNo,
+        displayName: employee.displayName,
+        email: employee.email,
+        department: employee.department,
+        team: employee.team,
+        position: employee.position,
+        isActive: true,
+        role: payload.role ?? "Employee",
+      };
+    }
+  );
+}
+
+export async function updateUserRole(userId: string, role: string): Promise<UserRow> {
+  return withFallback(
+    async () => {
+      const { data } = await api.put<UserRow>(`/api/system-settings/users/${userId}/role`, { role });
+      return data;
+    },
+    () => {
+      const employee = offlineStore.employees.find((x) => x.id === userId);
+      if (!employee) {
+        throw new Error("User not found.");
+      }
+
+      const state = ensureOfflineUserState(userId);
+      state.role = role;
+
+      return {
+        id: employee.id,
+        employeeNo: employee.employeeNo,
+        displayName: employee.displayName,
+        email: employee.email,
+        department: employee.department,
+        team: employee.team,
+        position: employee.position,
+        isActive: state.isActive,
+        role: state.role,
+      };
+    }
+  );
+}
+
+export async function updateUserStatus(userId: string, isActive: boolean): Promise<UserRow> {
+  return withFallback(
+    async () => {
+      const { data } = await api.put<UserRow>(`/api/system-settings/users/${userId}/status`, { isActive });
+      return data;
+    },
+    () => {
+      const employee = offlineStore.employees.find((x) => x.id === userId);
+      if (!employee) {
+        throw new Error("User not found.");
+      }
+
+      const state = ensureOfflineUserState(userId);
+      state.isActive = isActive;
+
+      return {
+        id: employee.id,
+        employeeNo: employee.employeeNo,
+        displayName: employee.displayName,
+        email: employee.email,
+        department: employee.department,
+        team: employee.team,
+        position: employee.position,
+        isActive: state.isActive,
+        role: state.role,
+      };
+    }
+  );
+}
+
+export async function adminClearData(): Promise<string> {
+  return withFallback(
+    async () => {
+      const { data } = await api.post<{ message: string }>("/api/admin/clear");
+      return data.message;
+    },
+    () => {
+      offlineStore.employees = [];
+      offlineStore.balances = [];
+      offlineStore.leaveApplications = [];
+      offlineStore.reportingRelations = [];
+      offlineStore.publicHolidays = [];
+      offlineStore.preferences = {
+        language: "English",
+        theme: "light",
+        notificationEnabled: true,
+        defaultCalendarView: "month",
+        dashboardPersonalizationEnabled: true,
+      };
+
+      Object.keys(auditTrailStore).forEach((key) => delete auditTrailStore[key]);
+      Object.keys(offlineUserState).forEach((key) => delete offlineUserState[key]);
+
+      return "Database cleared.";
+    }
+  );
+}
+
+export async function adminReseedData(): Promise<string> {
+  return withFallback(
+    async () => {
+      const { data } = await api.post<{ message: string }>("/api/admin/reseed");
+      return data.message;
+    },
+    () => {
+      throw new Error("Reseed requires backend connectivity.");
+    }
   );
 }
 

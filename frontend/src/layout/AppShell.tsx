@@ -34,6 +34,7 @@ import { Fragment, ReactNode, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { getSmartSearch } from "../services/api";
+import { UserRole } from "../services/auth";
 import { SmartSearchResultItem } from "../types";
 import { navConfig, NavNode, routeTitleMap } from "./navConfig";
 
@@ -44,10 +45,79 @@ interface Props {
   mode: "light" | "dark";
   onToggleTheme: () => void;
   userEmail?: string;
+  userRole?: UserRole;
   onLogout?: () => void;
 }
 
-export function AppShell({ children, mode, onToggleTheme, userEmail, onLogout }: Props) {
+function canAccessPath(path: string | undefined, role?: UserRole): boolean {
+  if (!path) {
+    return true;
+  }
+
+  const adminRoles: UserRole[] = ["HR", "SystemAdministrator"];
+  const approverRoles: UserRole[] = ["Supervisor", "Manager", "HR", "SystemAdministrator"];
+
+  if (path.startsWith("/system-settings/")) {
+    return Boolean(role && adminRoles.includes(role));
+  }
+
+  if (path === "/e-leave/leave-type") {
+    return Boolean(role && adminRoles.includes(role));
+  }
+
+  if (path === "/e-leave/application-maintenance" || path === "/e-leave/reporting-hierarchy") {
+    return Boolean(role && approverRoles.includes(role));
+  }
+
+  return true;
+}
+
+function trimDividers(nodes: NavNode[]): NavNode[] {
+  const trimmed: NavNode[] = [];
+
+  nodes.forEach((node) => {
+    if (node.divider) {
+      if (trimmed.length === 0 || trimmed[trimmed.length - 1].divider) {
+        return;
+      }
+    }
+
+    trimmed.push(node);
+  });
+
+  while (trimmed.length > 0 && trimmed[trimmed.length - 1].divider) {
+    trimmed.pop();
+  }
+
+  return trimmed;
+}
+
+function filterNavNodes(nodes: NavNode[], role?: UserRole): NavNode[] {
+  const next: NavNode[] = [];
+
+  nodes.forEach((node) => {
+    if (node.divider) {
+      next.push(node);
+      return;
+    }
+
+    const filteredChildren = node.children ? filterNavNodes(node.children, role) : undefined;
+    const allowSelf = canAccessPath(node.path, role);
+
+    if (!allowSelf && (!filteredChildren || filteredChildren.length === 0)) {
+      return;
+    }
+
+    next.push({
+      ...node,
+      children: filteredChildren,
+    });
+  });
+
+  return trimDividers(next);
+}
+
+export function AppShell({ children, mode, onToggleTheme, userEmail, userRole, onLogout }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -60,6 +130,7 @@ export function AppShell({ children, mode, onToggleTheme, userEmail, onLogout }:
   const [searchRequested, setSearchRequested] = useState(false);
   const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
   const [accountAnchor, setAccountAnchor] = useState<null | HTMLElement>(null);
+  const visibleNav = useMemo(() => filterNavNodes(navConfig, userRole), [userRole]);
 
   const crumbs = useMemo(() => {
     const path = location.pathname;
@@ -190,7 +261,7 @@ export function AppShell({ children, mode, onToggleTheme, userEmail, onLogout }:
         </Typography>
       </Box>
       <Divider />
-      <List>{navConfig.map((node) => renderNode(node))}</List>
+      <List>{visibleNav.map((node) => renderNode(node))}</List>
     </Box>
   );
 
@@ -320,7 +391,7 @@ export function AppShell({ children, mode, onToggleTheme, userEmail, onLogout }:
 
           {userEmail && (
             <Typography variant="body2" color="text.secondary" sx={{ display: { xs: "none", md: "block" } }}>
-              {userEmail}
+              {userEmail}{userRole ? ` (${userRole})` : ""}
             </Typography>
           )}
 

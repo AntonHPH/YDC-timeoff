@@ -6,6 +6,8 @@ public interface IEmployeeRepository
 {
     Task<IReadOnlyList<Employee>> GetAllAsync(CancellationToken ct = default);
     Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddAsync(Employee employee, CancellationToken ct = default);
+    Task UpdateAsync(Employee employee, CancellationToken ct = default);
 }
 
 public interface ILeaveTypeRepository
@@ -30,6 +32,12 @@ public interface ILeaveApplicationRepository
     Task UpdateAsync(LeaveApplication application, CancellationToken ct = default);
 }
 
+public interface ILeaveApplicationAuditRepository
+{
+    Task<IReadOnlyList<LeaveApplicationAuditEntry>> GetByApplicationIdAsync(Guid applicationId, CancellationToken ct = default);
+    Task AddAsync(LeaveApplicationAuditEntry entry, CancellationToken ct = default);
+}
+
 public interface IHolidayRepository
 {
     Task<IReadOnlyList<PublicHoliday>> GetAllAsync(CancellationToken ct = default);
@@ -38,6 +46,25 @@ public interface IHolidayRepository
 public interface IReportingRepository
 {
     Task<IReadOnlyList<ReportingRelation>> GetAllAsync(CancellationToken ct = default);
+}
+
+public interface IUserRoleRepository
+{
+    Task<IReadOnlyDictionary<Guid, string>> GetAllAsync(CancellationToken ct = default);
+    Task<string?> GetByEmployeeIdAsync(Guid employeeId, CancellationToken ct = default);
+    Task SetRoleAsync(Guid employeeId, string role, CancellationToken ct = default);
+}
+
+public interface IUserPreferenceRepository
+{
+    Task<UserPreferenceDto> GetDefaultsAsync(CancellationToken ct = default);
+    Task SaveDefaultsAsync(UserPreferenceDto preference, CancellationToken ct = default);
+}
+
+public interface IDataStoreAdminRepository
+{
+    Task ResetToSeedAsync(CancellationToken ct = default);
+    Task ClearAllAsync(CancellationToken ct = default);
 }
 
 public interface ILeaveCalculationService
@@ -50,8 +77,11 @@ public interface ILeaveApplicationService
     Task<IReadOnlyList<LeaveApplicationDto>> GetAllAsync(CancellationToken ct = default);
     Task<LeaveApplicationDto?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<LeaveApplicationDto> CreateAsync(LeaveApplicationCreateRequest request, CancellationToken ct = default);
+    Task<LeaveApplicationDto> UpdateAsync(Guid applicationId, LeaveApplicationUpdateRequest request, CancellationToken ct = default);
     Task ApproveAsync(Guid applicationId, ApprovalActionRequest request, CancellationToken ct = default);
     Task RejectAsync(Guid applicationId, ApprovalActionRequest request, CancellationToken ct = default);
+    Task CancelAsync(Guid applicationId, LeaveApplicationCancelRequest request, CancellationToken ct = default);
+    Task<IReadOnlyList<LeaveApplicationAuditEntryDto>> GetAuditAsync(Guid applicationId, CancellationToken ct = default);
 }
 
 public interface IDashboardService

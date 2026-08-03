@@ -9,8 +9,8 @@ interface Props {
 }
 
 export function LoginPage({ onLoginSuccess }: Props) {
-  const [email, setEmail] = useState("admin@hutchisonports.com");
-  const [password, setPassword] = useState("Password123!");
+  const [email, setEmail] = useState("bot0@hutchisonports.com");
+  const [password, setPassword] = useState("1234");
   const [error, setError] = useState("");
 
   const submit = (event: FormEvent) => {
@@ -36,6 +36,11 @@ export function LoginPage({ onLoginSuccess }: Props) {
           <Typography variant="body2" color="text.secondary" mb={2}>
             Hutchison Ports E-Leave
           </Typography>
+
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Demo accounts: bot0@hutchisonports.com to bot12@hutchisonports.com.
+            Password for all demo users: 1234.
+          </Alert>
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
