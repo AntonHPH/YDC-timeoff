@@ -46,7 +46,7 @@ export function UserMaintenancePage() {
     department: "",
     team: "",
     position: "",
-    businessUnit: "Hong Kong Terminal",
+    businessUnit: "HIT",
     role: "Employee",
   });
 
@@ -120,7 +120,7 @@ export function UserMaintenancePage() {
         department: createForm.department || "General",
         team: createForm.team || "General",
         position: createForm.position || "Staff",
-        businessUnit: createForm.businessUnit || "Hong Kong Terminal",
+        businessUnit: createForm.businessUnit || "HIT",
         role: createForm.role,
       });
 
@@ -133,7 +133,7 @@ export function UserMaintenancePage() {
         department: "",
         team: "",
         position: "",
-        businessUnit: "Hong Kong Terminal",
+        businessUnit: "HIT",
         role: "Employee",
       });
       await load();

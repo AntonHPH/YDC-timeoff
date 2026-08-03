@@ -70,7 +70,7 @@ interface LeaveTypeForm {
 function mapLeaveTypeToForm(x: LeaveType): LeaveTypeForm {
   return {
     id: x.id,
-    businessUnit: "Hong Kong Terminal",
+    businessUnit: "HIT",
     nameEn: x.nameEn,
     nameTc: x.nameTc ?? "",
     nameSc: x.nameSc ?? "",

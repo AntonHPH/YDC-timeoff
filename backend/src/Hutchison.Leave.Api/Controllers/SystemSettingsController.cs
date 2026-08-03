@@ -106,7 +106,7 @@ public sealed class SystemSettingsController : ControllerBase
             DisplayName = request.DisplayName.Trim(),
             Email = request.Email.Trim().ToLowerInvariant(),
             PositionTitle = string.IsNullOrWhiteSpace(request.Position) ? "Staff" : request.Position.Trim(),
-            BusinessUnit = string.IsNullOrWhiteSpace(request.BusinessUnit) ? "Hong Kong Terminal" : request.BusinessUnit.Trim(),
+            BusinessUnit = string.IsNullOrWhiteSpace(request.BusinessUnit) ? "HIT" : request.BusinessUnit.Trim(),
             Department = string.IsNullOrWhiteSpace(request.Department) ? "General" : request.Department.Trim(),
             Team = string.IsNullOrWhiteSpace(request.Team) ? "General" : request.Team.Trim(),
             IsActive = true

@@ -241,7 +241,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot0",
                 Email = "bot0@hutchisonports.com",
                 PositionTitle = "Department Head",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "IT Leadership",
                 IsActive = true
@@ -253,7 +253,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot1",
                 Email = "bot1@hutchisonports.com",
                 PositionTitle = "Manager",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 1",
                 IsActive = true
@@ -265,7 +265,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot2",
                 Email = "bot2@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 1",
                 IsActive = true
@@ -277,7 +277,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot3",
                 Email = "bot3@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 1",
                 IsActive = true
@@ -289,7 +289,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot4",
                 Email = "bot4@hutchisonports.com",
                 PositionTitle = "Manager",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 2",
                 IsActive = true
@@ -301,7 +301,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot5",
                 Email = "bot5@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 2",
                 IsActive = true
@@ -313,7 +313,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot6",
                 Email = "bot6@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 2",
                 IsActive = true
@@ -325,7 +325,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot7",
                 Email = "bot7@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "IT",
                 Team = "Team 2",
                 IsActive = true
@@ -337,7 +337,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot12",
                 Email = "bot12@hutchisonports.com",
                 PositionTitle = "Senior Manager",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "Finance",
                 Team = "Finance Leadership",
                 IsActive = true
@@ -349,7 +349,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot8",
                 Email = "bot8@hutchisonports.com",
                 PositionTitle = "Manager",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "Finance",
                 Team = "Team 3",
                 IsActive = true
@@ -361,7 +361,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot9",
                 Email = "bot9@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "Finance",
                 Team = "Team 3",
                 IsActive = true
@@ -373,7 +373,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot10",
                 Email = "bot10@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "Finance",
                 Team = "Team 3",
                 IsActive = true
@@ -385,7 +385,7 @@ internal sealed class InMemoryDataStore
                 DisplayName = "Bot11",
                 Email = "bot11@hutchisonports.com",
                 PositionTitle = "Data Analyst",
-                BusinessUnit = "Hong Kong Terminal",
+                BusinessUnit = "HIT",
                 Department = "Finance",
                 Team = "Team 3",
                 IsActive = true
